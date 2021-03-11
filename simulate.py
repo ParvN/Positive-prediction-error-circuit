@@ -111,4 +111,60 @@ def Simulate(weight_dict, neurons_dict, rates_dict, stim_dict, eta_dict, flag_di
     test = flag_dict['test']
     opto_gen = flag_dict['opto_gen']
     neuron_flag = flag_dict['neuron_flag']
-    opto_val = flag_dict['opto_val']    
+    opto_val = flag_dict['opto_val']
+
+    if test == 1:
+        V, M = test_stimulus(stim_value, dt)  # Test stimulus
+
+        xE = re - w_ed * rd + w_ep * rp
+        xD = rd - w_de * re + w_ds * rs
+        xP = rp * (1.0 + w_pp) - w_pe * re + w_ps * rs + w_pv * rv
+        xS = rs - w_se * re + w_sv * rv
+        xV = rv - w_ve * re + w_vs * rs
+
+        if opto_gen == 1:  # Optogenetic act/inact of specific neuron
+            if neuron_flag == 0:  # PV
+                xP += opto_val
+            elif neuron_flag == 1:  # SOM
+                xS += opto_val
+            elif neuron_flag == 2:  # VIP
+                xV += opto_val
+    else:  # If training
+        M, V = train_stimulus(stim_value, stim_count, dt, no_visual)  # train stimulus
+
+        xE = fixed_inp['xe']
+        xD = fixed_inp['xd']
+        xP = fixed_inp['xp']
+        xS = fixed_inp['xs']
+        xV = fixed_inp['xv']
+
+    x_E = np.ones((len(V))) * xE  # Fixed input for all neurons
+    x_D = np.ones((len(V))) * xD
+    x_P = np.ones((len(V))) * xP
+    x_S = np.ones((len(V))) * xS
+    x_V = np.ones((len(V))) * xV
+
+    stim_E = Ve * V + x_E  # Stimulus for all neurons
+    stim_D = Md * M + x_D
+    stim_P = Vp * V + Mp * M + x_P
+    stim_S = Vs * V + Ms * M + x_S
+    stim_V = Vv * V + Mv * M + x_V
+
+    tauE = 60  # Time constants
+    tauI = 2
+
+    rE = []
+    rD = []
+    rP = []
+    rS = []
+    rV = []
+
+    r_E = r_D = np.zeros((Ne))
+    r_P = r_S = r_V = np.zeros((Ni))
+
+    wep_track = []
+    wds_track = []
+    wpv_track = []
+    wps_track = []
+
+    I_e = []
