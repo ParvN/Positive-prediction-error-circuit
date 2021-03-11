@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import matplotlib
 from matplotlib import rc
-
+import numpy as np
 # plt.style.use('seaborn-white')
 
 
