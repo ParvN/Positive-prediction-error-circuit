@@ -168,3 +168,85 @@ def Simulate(weight_dict, neurons_dict, rates_dict, stim_dict, eta_dict, flag_di
     wps_track = []
 
     I_e = []
+
+    for idx in range(len(V)):
+
+        dr_E = (dt / tauE) * (-r_E - np.dot(W_EP, r_P) + np.dot(W_ED, r_D) + stim_E[idx])
+        dr_D = (dt / tauE) * (-r_D - np.dot(W_DS, r_S) + np.dot(W_DE, r_E) + stim_D[idx])
+        dr_P = (dt / tauI) * (
+                    -r_P + np.dot(W_PE, r_E) - np.dot(W_PP, r_P) - np.dot(W_PS, r_S) - np.dot(W_PV, r_V) + stim_P[idx])
+        dr_S = (dt / tauI) * (-r_S + np.dot(W_SE, r_E) - np.dot(W_SV, r_V) + stim_S[idx])
+        dr_V = (dt / tauI) * (-r_V + np.dot(W_VE, r_E) - np.dot(W_VS, r_S) + stim_V[idx])
+
+        r_E = np.maximum(r_E + dr_E, 0)
+        r_D = np.maximum(r_D + dr_D, 0)
+        r_P = np.maximum(r_P + dr_P, 0)
+        r_S = np.maximum(r_S + dr_S, 0)
+        r_V = np.maximum(r_V + dr_V, 0)
+
+        if idx % 50 == 0:
+            rE.append(r_E)
+            rD.append(r_D)
+            rP.append(r_P)
+            rS.append(r_S)
+            rV.append(r_V)
+            I_e.append(((W_ED @ r_D) + stim_E[idx] - (W_EP @ r_P)))
+
+        if test == 0:
+
+            for i in range(C_EP.shape[0]):
+                for j in range(C_EP.shape[1]):
+                    Δw = η1 * (r_E[i] - re) * r_P[j]
+                    W_EP[i, j] += Δw * C_EP[i, j]
+
+            Є = 0.01
+            for i in range(C_DS.shape[0]):
+                for j in range(C_DS.shape[1]):
+                    Δw = η2 * (r_D[i] - Є) * r_S[j]
+                    W_DS[i, j] += Δw * C_DS[i, j]
+
+            for i in range(C_PV.shape[0]):
+                for j in range(C_PV.shape[1]):
+                    Nei = 0
+                    Δwij = 0
+                    for k in range(C_EP.shape[0]):
+                        if C_EP[k, i] == 1:
+                            Nei += 1
+                            Δwij += (re - r_E[k]) * r_V[j]
+                    W_PV[i, j] += (η3 / Nei) * Δwij * C_PV[i, j]
+
+            for i in range(C_PS.shape[0]):
+                for j in range(C_PS.shape[1]):
+                    Nei = 0
+                    Δwij = 0
+                    for k in range(C_EP.shape[0]):
+                        if C_EP[k, i] == 1:
+                            Nei += 1
+                            Δwij += (re - r_E[k]) * r_S[j]
+                    W_PS[i, j] += (η4 / Nei) * Δwij * C_PS[i, j]
+
+            if idx % 50 == 0:
+                wep_track.append(np.sum(W_EP[0]))
+                wpv_track.append(np.sum(W_PV[0]))
+                wps_track.append(np.sum(W_PS[0]))
+                wds_track.append(np.sum(W_DS[0]))
+    rE  = arr_conv(rE)
+    rD  = arr_conv(rD)
+    rP  = arr_conv(rP)
+    rS  = arr_conv(rS)
+    rV  = arr_conv(rV)
+    I_e = arr_conv(I_e)
+
+    rates['re'] = rE
+    rates['rd'] = rD
+    rates['rp'] = rP
+    rates['rs'] = rS
+    rates['rv'] = rV
+    rates['Ie'] = I_e
+
+    weights['w_ep'] = np.array(wep_track)
+    weights['w_ds'] = np.array(wds_track)
+    weights['w_pv'] = np.array(wpv_track)
+    weights['w_ps'] = np.array(wps_track)
+
+    return rates, weights
