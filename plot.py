@@ -2,6 +2,12 @@ import matplotlib.pyplot as plt
 import matplotlib
 from matplotlib import rc
 import numpy as np
+
+import os
+import sys
+from pathlib import Path
+
+path= os.path.abspath(__file__)
 # plt.style.use('seaborn-white')
 
 
@@ -43,9 +49,12 @@ def plot_rates(re, rd, rp, rv, rs, stim_len):
 
     fig.text(0.5, 0.02, 'Time(s)', ha='center')
     fig.text(0.04, 0.5, 'Mean Firing rate(Hz)', va='center', rotation='vertical')
-    # fig.tight_layout()
     plt.subplots_adjust(top=0.94)
+    fig.savefig(path + '/Results/rates_plastic_network.png')
+    # fig.tight_layout()
     plt.show()
+
+
 
 
 def plot_plastic_weights(wpv_track, wps_track, wep_track, wds_track, o_wpv, o_wps, o_wds, o_wep, stim_len):
@@ -73,4 +82,5 @@ def plot_plastic_weights(wpv_track, wps_track, wep_track, wds_track, o_wpv, o_wp
     fig.text(0.04, 0.5, 'Weight value', va='center', rotation='vertical')
     # fig.tight_layout()
     plt.subplots_adjust(top=0.94)
+    fig.savefig(path + '/Results/weights_plastic_network.png')
     plt.show()
