@@ -7,11 +7,15 @@ import os
 import sys
 from pathlib import Path
 
-path= os.path.abspath(__file__)
+p = Path(os.getcwd())
+#os.chdir(p.parent)
+path = os.getcwd()
+
 # plt.style.use('seaborn-white')
 
 
-plt.rcParams['font.family'] = 'serif'
+plt.rcParams['font.family'] = 'sans-serif'
+plt.rcParams['font.weight'] = 'normal'
 plt.rcParams['font.serif'] = 'Ubuntu'
 plt.rcParams['font.monospace'] = 'Ubuntu Mono'
 plt.rcParams['font.size'] = 8
@@ -22,7 +26,7 @@ plt.rcParams['xtick.labelsize'] = 8
 plt.rcParams['ytick.labelsize'] = 8
 plt.rcParams['legend.fontsize'] = 8
 plt.rcParams['figure.titlesize'] = 9
-rc('font', weight='normal')
+
 rc('axes', linewidth=1)
 
 
@@ -52,15 +56,12 @@ def plot_rates(re, rd, rp, rv, rs, stim_len):
     plt.subplots_adjust(top=0.94)
     fig.savefig(path + '/Results/rates_plastic_network.png')
     # fig.tight_layout()
-    plt.show()
-
-
 
 
 def plot_plastic_weights(wpv_track, wps_track, wep_track, wds_track, o_wpv, o_wps, o_wds, o_wep, stim_len):
     fig, axs = plt.subplots(4, 1, figsize=(6, 4), dpi=150)
     fig.suptitle("Plastic weights - PPE Neurons")
-    t = np.linspace(0, stim_len, len(re))
+    t = np.linspace(0, stim_len, len(wpv_track))
     weights = [wep_track, wds_track, wpv_track, wps_track]
     labels = ["WEP", "WDS", "WPV", "WPS"]
     colors = ["red", "orange", "green", "blue"]
@@ -83,4 +84,4 @@ def plot_plastic_weights(wpv_track, wps_track, wep_track, wds_track, o_wpv, o_wp
     # fig.tight_layout()
     plt.subplots_adjust(top=0.94)
     fig.savefig(path + '/Results/weights_plastic_network.png')
-    plt.show()
+    
