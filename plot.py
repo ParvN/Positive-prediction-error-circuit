@@ -54,7 +54,7 @@ def plot_rates(re, rd, rp, rv, rs, stim_len,filename):
     fig.text(0.5, 0.02, 'Time(s)', ha='center')
     fig.text(0.04, 0.5, 'Mean Firing rate(Hz)', va='center', rotation='vertical')
     plt.subplots_adjust(top=0.94)
-    fig.savefig(path + '/Results/rates_plastic_network.png')
+    fig.savefig(path + '/Results/'+filename)
     # fig.tight_layout()
 
 
