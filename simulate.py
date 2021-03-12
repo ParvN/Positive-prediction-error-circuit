@@ -115,13 +115,11 @@ def Simulate(weight_dict, neurons_dict, rates_dict, stim_dict, eta_dict, flag_di
 
     if test == 1:
         V, M = test_stimulus(stim_value, dt)  # Test stimulus
-
-        xE = re - w_ed * rd + w_ep * rp
-        xD = rd - w_de * re + w_ds * rs
-        xP = rp * (1.0 + w_pp) - w_pe * re + w_ps * rs + w_pv * rv
-        xS = rs - w_se * re + w_sv * rv
-        xV = rv - w_ve * re + w_vs * rs
-
+        xE = fixed_inp['xe']
+        xD = fixed_inp['xd']
+        xP = fixed_inp['xp']
+        xS = fixed_inp['xs']
+        xV = fixed_inp['xv']
         if opto_gen == 1:  # Optogenetic act/inact of specific neuron
             if neuron_flag == 0:  # PV
                 xP += opto_val
@@ -171,18 +169,23 @@ def Simulate(weight_dict, neurons_dict, rates_dict, stim_dict, eta_dict, flag_di
 
     for idx in range(len(V)):
 
-        dr_E = (dt / tauE) * (-r_E - np.dot(W_EP, r_P) + np.dot(W_ED, r_D) + stim_E[idx])
-        dr_D = (dt / tauE) * (-r_D - np.dot(W_DS, r_S) + np.dot(W_DE, r_E) + stim_D[idx])
-        dr_P = (dt / tauI) * (
-                    -r_P + np.dot(W_PE, r_E) - np.dot(W_PP, r_P) - np.dot(W_PS, r_S) - np.dot(W_PV, r_V) + stim_P[idx])
-        dr_S = (dt / tauI) * (-r_S + np.dot(W_SE, r_E) - np.dot(W_SV, r_V) + stim_S[idx])
-        dr_V = (dt / tauI) * (-r_V + np.dot(W_VE, r_E) - np.dot(W_VS, r_S) + stim_V[idx])
+        dr_E1 = (1 / tauE) * (-r_E - (W_EP @ r_P) + (W_ED @ r_D) + stim_E[idx])
+        dr_D1 = (1 / tauE) * (-r_D - (W_DS @ r_S) + (W_DE @ r_E) + stim_D[idx])
+        dr_P1 = (1 / tauI) * (-r_P + (W_PE @ r_E) - (W_PP @ r_P) - (W_PS @ r_S) - (W_PV @ r_V) + stim_P[idx])
+        dr_S1 = (1 / tauI) * (-r_S + (W_SE @ r_E) - (W_SV @ r_V) + stim_S[idx])
+        dr_V1 = (1 / tauI) * (-r_V + (W_VE @ r_E) - (W_VS @ r_S) + stim_V[idx])
 
-        r_E = np.maximum(r_E + dr_E, 0)
-        r_D = np.maximum(r_D + dr_D, 0)
-        r_P = np.maximum(r_P + dr_P, 0)
-        r_S = np.maximum(r_S + dr_S, 0)
-        r_V = np.maximum(r_V + dr_V, 0)
+        r_E += dr_E1 * dt
+        r_D += dr_D1 * dt
+        r_P += dr_P1 * dt
+        r_S += dr_S1 * dt
+        r_V += dr_V1 * dt
+
+        r_E = np.maximum(r_E, 0)
+        r_D = np.maximum(r_D, 0)
+        r_P = np.maximum(r_P, 0)
+        r_S = np.maximum(r_S, 0)
+        r_V = np.maximum(r_V, 0)
 
         if idx % 50 == 0:
             rE.append(r_E)
