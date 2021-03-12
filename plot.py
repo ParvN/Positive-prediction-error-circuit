@@ -30,7 +30,7 @@ plt.rcParams['figure.titlesize'] = 9
 rc('axes', linewidth=1)
 
 
-def plot_rates(re, rd, rp, rv, rs, stim_len):
+def plot_rates(re, rd, rp, rv, rs, stim_len,filename):
     '''Function to plot the firing rates of all neurons'''
 
     fig, axs = plt.subplots(5, 1, figsize=(6, 4), dpi=150)
@@ -58,7 +58,7 @@ def plot_rates(re, rd, rp, rv, rs, stim_len):
     # fig.tight_layout()
 
 
-def plot_plastic_weights(wpv_track, wps_track, wep_track, wds_track, o_wpv, o_wps, o_wds, o_wep, stim_len):
+def plot_plastic_weights(wpv_track, wps_track, wep_track, wds_track, o_wpv, o_wps, o_wds, o_wep, stim_len,filename):
     fig, axs = plt.subplots(4, 1, figsize=(6, 4), dpi=150)
     fig.suptitle("Plastic weights - PPE Neurons")
     t = np.linspace(0, stim_len, len(wpv_track))
@@ -83,5 +83,4 @@ def plot_plastic_weights(wpv_track, wps_track, wep_track, wds_track, o_wpv, o_wp
     fig.text(0.04, 0.5, 'Weight value', va='center', rotation='vertical')
     # fig.tight_layout()
     plt.subplots_adjust(top=0.94)
-    fig.savefig(path + '/Results/weights_plastic_network.png')
-    
+    fig.savefig(path + '/Results/'+ filename)
