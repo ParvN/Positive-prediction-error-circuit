@@ -84,3 +84,22 @@ def plot_plastic_weights(wpv_track, wps_track, wep_track, wds_track, o_wpv, o_wp
     # fig.tight_layout()
     plt.subplots_adjust(top=0.94)
     fig.savefig(path + '/Results/'+ filename)
+
+
+def plot_opto_exc_input(opt_vals, op_array, pc_in, pv_in, filename):
+    neurons = ["PV", "SOM", "VIP"]
+    fig, axs = plt.subplots(1, 3, figsize=(12, 4), dpi=70)
+    for i in range(len(axs)):
+        axs[i].set_title('%s' % (neurons[i]))
+        axs[i].plot(opt_vals, op_array[0, i], label="Feedback", marker="*")
+        axs[i].plot(opt_vals, op_array[1, i], label="Mismatch", marker="+")
+        axs[i].plot(opt_vals, op_array[2, i], label="Playback", marker="x")
+        axs[i].plot(opt_vals, op_array[3, i], label="Baseline", marker=".")
+        axs[i].legend(loc="best", frameon=False)
+        axs[i].spines['top'].set_visible(False)
+        axs[i].spines['right'].set_visible(False)
+    axs[0].set_ylabel("Total Exc input")
+    fig.suptitle("PC = %s, PV = %s" % (pc_in, pv_in))
+    fig.tight_layout()
+    plt.subplots_adjust(top=0.85)
+    fig.savefig(path + '/Results/'+ filename)
